@@ -9,6 +9,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       padding: 20px;
       text-align: center;
+      background-color: #f5f5f5;
     }
     .loading {
       margin-top: 50px;
@@ -20,65 +21,27 @@
 <body>
   <div class="loading" id="status">Загрузка панели управления...</div>
   
-  <!-- Пробуем несколько CDN для надежности -->
   <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
   
   <script>
-    // Ждем полной загрузки страницы
     window.addEventListener('load', function() {
       var status = document.getElementById('status');
       
-      // Проверяем, загрузилась ли CMS
       if (typeof CMS !== 'undefined') {
         status.textContent = 'Инициализация CMS...';
         
         try {
+          // Упрощенная инициализация без setLocale
           CMS.init();
-          CMS.registerLocale('ru', {
-            app: {
-              loading: 'Загрузка...',
-              header: {
-                content: 'Контент',
-                workflow: 'Публикация',
-                media: 'Медиа',
-                quickAdd: 'Быстрое добавление'
-              }
-            }
-          });
-          CMS.setLocale('ru');
-          status.style.display = 'none'; // Скрываем статус загрузки
+          status.style.display = 'none';
         } catch (error) {
           status.textContent = 'Ошибка инициализации: ' + error.message;
           console.error('CMS init error:', error);
         }
       } else {
-        // Если CMS не загрузилась через 5 секунд, пробуем альтернативный CDN
-        setTimeout(function() {
-          if (typeof CMS === 'undefined') {
-            status.textContent = 'Основной CDN не загрузился, пробуем альтернативный...';
-            loadAlternativeCMS();
-          }
-        }, 5000);
+        status.textContent = 'Netlify CMS не загрузилась. Проверьте консоль для подробностей.';
       }
     });
-    
-    function loadAlternativeCMS() {
-      // Создаем новый script элемент для альтернативного CDN
-      var script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/netlify-cms@2.10.192/dist/netlify-cms.js';
-      script.onload = function() {
-        if (typeof CMS !== 'undefined') {
-          CMS.init();
-          document.getElementById('status').style.display = 'none';
-        } else {
-          document.getElementById('status').textContent = 'Не удалось загрузить CMS. Проверьте настройки Netlify.';
-        }
-      };
-      script.onerror = function() {
-        document.getElementById('status').textContent = 'Ошибка загрузки CMS. Проверьте консоль для подробностей.';
-      };
-      document.head.appendChild(script);
-    }
   </script>
 </body>
 </html>
