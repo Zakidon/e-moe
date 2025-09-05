@@ -1,0 +1,43 @@
+---
+// Верхняя часть файла (Frontmatter) - здесь пишем JavaScript
+const pageTitle = "Мой первый сайт";
+const welcomeMessage = "Добро пожаловать на мой сайт!";
+---
+
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+	<title>{pageTitle}</title>
+	<link rel="stylesheet" href="/styles/global.css" />
+  </head>
+  <body>
+    <header>
+      <h1>{pageTitle}</h1>
+      <nav>
+        <a href="/">Главная</a> | 
+        <a href="/about">О нас</a> | 
+        <a href="/blog">Блог</a>
+      </nav>
+    </header>
+    
+    <main>
+      <h2>{welcomeMessage}</h2>
+      <p>Это мой первый сайт на Astro! Я создаю его шаг за шагом.</p>
+      
+      <section>
+        <h3>Мои последние статьи</h3>
+        <ul>
+          <li><a href="/blog/post-1">Первая статья</a></li>
+          <li><a href="/blog/post-2">Вторая статья</a></li>
+        </ul>
+      </section>
+    </main>
+    
+    <footer>
+      <p>© 2025 Мой сайт. Все права защищены.</p>
+    </footer>
+  </body>
+</html>
