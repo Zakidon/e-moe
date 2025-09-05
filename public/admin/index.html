@@ -4,33 +4,81 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Панель управления контентом</title>
-  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    .loading {
+      margin-top: 50px;
+      font-size: 18px;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
+  <div class="loading" id="status">Загрузка панели управления...</div>
+  
+  <!-- Пробуем несколько CDN для надежности -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+  
   <script>
-    // Ждем загрузки CMS перед инициализацией
-    document.addEventListener("DOMContentLoaded", function() {
+    // Ждем полной загрузки страницы
+    window.addEventListener('load', function() {
+      var status = document.getElementById('status');
+      
       // Проверяем, загрузилась ли CMS
       if (typeof CMS !== 'undefined') {
-        CMS.init();
+        status.textContent = 'Инициализация CMS...';
         
-        // Русский язык интерфейса
-        CMS.registerLocale('ru', {
-          app: {
-            loading: 'Загрузка...',
-            header: {
-              content: 'Контент',
-              workflow: 'Публикация',
-              media: 'Медиа',
-              quickAdd: 'Быстрое добавление'
+        try {
+          CMS.init();
+          CMS.registerLocale('ru', {
+            app: {
+              loading: 'Загрузка...',
+              header: {
+                content: 'Контент',
+                workflow: 'Публикация',
+                media: 'Медиа',
+                quickAdd: 'Быстрое добавление'
+              }
             }
-          }
-        });
-        CMS.setLocale('ru');
+          });
+          CMS.setLocale('ru');
+          status.style.display = 'none'; // Скрываем статус загрузки
+        } catch (error) {
+          status.textContent = 'Ошибка инициализации: ' + error.message;
+          console.error('CMS init error:', error);
+        }
       } else {
-        console.error('Netlify CMS не загрузилась');
+        // Если CMS не загрузилась через 5 секунд, пробуем альтернативный CDN
+        setTimeout(function() {
+          if (typeof CMS === 'undefined') {
+            status.textContent = 'Основной CDN не загрузился, пробуем альтернативный...';
+            loadAlternativeCMS();
+          }
+        }, 5000);
       }
     });
+    
+    function loadAlternativeCMS() {
+      // Создаем новый script элемент для альтернативного CDN
+      var script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/netlify-cms@2.10.192/dist/netlify-cms.js';
+      script.onload = function() {
+        if (typeof CMS !== 'undefined') {
+          CMS.init();
+          document.getElementById('status').style.display = 'none';
+        } else {
+          document.getElementById('status').textContent = 'Не удалось загрузить CMS. Проверьте настройки Netlify.';
+        }
+      };
+      script.onerror = function() {
+        document.getElementById('status').textContent = 'Ошибка загрузки CMS. Проверьте консоль для подробностей.';
+      };
+      document.head.appendChild(script);
+    }
   </script>
 </body>
 </html>
