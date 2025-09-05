@@ -8,22 +8,29 @@
 </head>
 <body>
   <script>
-    // Инициализация CMS
-    CMS.init();
-    
-    // Опционально: русский язык интерфейса
-    CMS.registerLocale('ru', {
-      app: {
-        loading: 'Загрузка...',
-        header: {
-          content: 'Контент',
-          workflow: 'Публикация',
-          media: 'Медиа',
-          quickAdd: 'Быстрое добавление'
-        }
+    // Ждем загрузки CMS перед инициализацией
+    document.addEventListener("DOMContentLoaded", function() {
+      // Проверяем, загрузилась ли CMS
+      if (typeof CMS !== 'undefined') {
+        CMS.init();
+        
+        // Русский язык интерфейса
+        CMS.registerLocale('ru', {
+          app: {
+            loading: 'Загрузка...',
+            header: {
+              content: 'Контент',
+              workflow: 'Публикация',
+              media: 'Медиа',
+              quickAdd: 'Быстрое добавление'
+            }
+          }
+        });
+        CMS.setLocale('ru');
+      } else {
+        console.error('Netlify CMS не загрузилась');
       }
     });
-    CMS.setLocale('ru');
   </script>
 </body>
 </html>
